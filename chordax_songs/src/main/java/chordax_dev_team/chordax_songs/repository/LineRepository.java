@@ -1,14 +1,17 @@
 package chordax_dev_team.chordax_songs.repository;
 
-import java.util.List;
+import chordax_dev_team.chordax_songs.model.Line;
+import chordax_dev_team.chordax_songs.model.Tone;
 import org.springframework.data.jpa.repository.JpaRepository;
-import chordax_dev_team.chordax_songs.model.Song;
 
-public interface SongRepository extends JpaRepository<Song, Long> {
+public interface LineRepository extends JpaRepository<Line, Long> {
 
-	List<Song> findByUserId(long userId);
-
-	Song findByUserIdAndTitle(long userId, String title);
-
-	Song findByUserIdAndId(long userId, long id);
+    default int countToneOccurrences(Tone tone){
+        int occurrences = 0;
+//        List<Line> line = ;
+        for(Line line : findAll()){
+            if(line.getTones().contains(tone)) occurrences++;
+        }
+        return occurrences;
+    }
 }

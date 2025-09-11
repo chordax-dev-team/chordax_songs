@@ -1,60 +1,164 @@
 {
+  "id": 1,
   "title": "Yesterday",
   "composer": "Paul McCartney",
   "author": "John Lennon & Paul McCartney",
+  "enteredAt": "2025-09-11T12:37:20.7796697",
+  "userId": 1,
   "lines": [
     {
+      "id": 1,
       "lineType": "VERSE",
       "lyrics": "Yesterday, all my troubles seemed so far away",
       "tones": [
-        { "chord": "F", "position": 0 },
-        { "chord": "Em7", "position": 60 },
-        { "chord": "A7", "position": 120 },
-        { "chord": "Dm", "position": 180 },
-        { "chord": "Bb", "position": 240 },
-        { "chord": "C7", "position": 300 }
+        {
+          "id": 1,
+          "chord": "F",
+          "position": 0
+        },
+        {
+          "id": 2,
+          "chord": "Em7",
+          "position": 60
+        },
+        {
+          "id": 3,
+          "chord": "A7",
+          "position": 120
+        },
+        {
+          "id": 4,
+          "chord": "Dm",
+          "position": 180
+        },
+        {
+          "id": 5,
+          "chord": "Bb",
+          "position": 240
+        },
+        {
+          "id": 6,
+          "chord": "C7",
+          "position": 300
+        }
       ]
     },
     {
+      "id": 2,
       "lineType": "VERSE",
       "lyrics": "Now it looks as though they're here to stay",
       "tones": [
-        { "chord": "F", "position": 0 },
-        { "chord": "F/E", "position": 60 },
-        { "chord": "Dm", "position": 120 },
-        { "chord": "G7", "position": 180 },
-        { "chord": "Bb", "position": 240 }
+        {
+          "id": 1,
+          "chord": "F",
+          "position": 0
+        },
+        {
+          "id": 7,
+          "chord": "F/E",
+          "position": 60
+        },
+        {
+          "id": 8,
+          "chord": "Dm",
+          "position": 120
+        },
+        {
+          "id": 9,
+          "chord": "G7",
+          "position": 180
+        },
+        {
+          "id": 5,
+          "chord": "Bb",
+          "position": 240
+        }
       ]
     },
     {
+      "id": 3,
       "lineType": "VERSE",
       "lyrics": "Oh, I believe in yesterday",
       "tones": [
-        { "chord": "F", "position": 0 }
+        {
+          "id": 1,
+          "chord": "F",
+          "position": 0
+        }
       ]
     },
     {
+      "id": 4,
       "lineType": "CHORUS",
       "lyrics": "Why she had to go, I don't know, she wouldn't say",
       "tones": [
-        { "chord": "Em7", "position": 0 },
-        { "chord": "A7", "position": 60 },
-        { "chord": "Dm", "position": 120 },
-        { "chord": "Bb", "position": 180 },
-        { "chord": "Gm", "position": 240 },
-        { "chord": "C", "position": 300 }
+        {
+          "id": 10,
+          "chord": "Em7",
+          "position": 0
+        },
+        {
+          "id": 11,
+          "chord": "A7",
+          "position": 60
+        },
+        {
+          "id": 8,
+          "chord": "Dm",
+          "position": 120
+        },
+        {
+          "id": 12,
+          "chord": "Bb",
+          "position": 180
+        },
+        {
+          "id": 13,
+          "chord": "Gm",
+          "position": 240
+        },
+        {
+          "id": 14,
+          "chord": "C",
+          "position": 300
+        }
       ]
     },
     {
+      "id": 5,
       "lineType": "CHORUS",
       "lyrics": "I said something wrong, now I long for yesterday",
       "tones": [
-        { "chord": "Em7", "position": 0 },
-        { "chord": "A7", "position": 60 },
-        { "chord": "Dm", "position": 120 },
-        { "chord": "Bb", "position": 180 },
-        { "chord": "Gm", "position": 240 },
-        { "chord": "C", "position": 300 }
+        {
+          "id": 10,
+          "chord": "Em7",
+          "position": 0
+        },
+        {
+          "id": 11,
+          "chord": "A7",
+          "position": 60
+        },
+        {
+          "id": 8,
+          "chord": "Dm",
+          "position": 120
+        },
+        {
+          "id": 12,
+          "chord": "Bb",
+          "position": 180
+        },
+        {
+          "id": 13,
+          "chord": "Gm",
+          "position": 240
+        },
+        {
+          "id": 14,
+          "chord": "C",
+          "position": 300
+        }
       ]
     }
   ]
