@@ -1,9 +1,10 @@
 ### THIS ###
 
-../*
+./*
 !./src
 !./storring_analysis
 !./.gitignore
 !./pom.xml
 
-git add --all -- :!chordax_songs/.idea/ :!chordax_songs/target/
+
+# git add --all -- :!chordax_songs/.idea/ :!chordax_songs/target/

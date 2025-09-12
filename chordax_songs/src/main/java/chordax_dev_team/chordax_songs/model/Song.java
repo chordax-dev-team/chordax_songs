@@ -1,19 +1,15 @@
 package chordax_dev_team.chordax_songs.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -48,12 +44,7 @@ public class Song {
 	private long userId;
 
 	@Schema(description = "List of lines containing lyrics and associated chords.")
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinTable(
-			name = "song_line",
-			joinColumns = @JoinColumn(name = "song_id"),
-			inverseJoinColumns = @JoinColumn(name = "line_id")
-	)
-	private List<Line> lines = new ArrayList<>();
+	@OneToMany(mappedBy="song")
+	private List<Line> lines;
 }
 

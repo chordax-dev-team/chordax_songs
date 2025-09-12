@@ -1,33 +1,31 @@
 package chordax_dev_team.chordax_songs.service;
 
-import chordax_dev_team.chordax_songs.model.Line;
 import chordax_dev_team.chordax_songs.model.Song;
-import chordax_dev_team.chordax_songs.model.Tone;
-import chordax_dev_team.chordax_songs.model.dto.LineDto;
 import chordax_dev_team.chordax_songs.model.dto.SongDto;
-import chordax_dev_team.chordax_songs.model.dto.ToneDto;
 import chordax_dev_team.chordax_songs.repository.LineRepository;
 import chordax_dev_team.chordax_songs.repository.SongRepository;
-import chordax_dev_team.chordax_songs.repository.ToneRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class SongService {
 
+
+    private final LineService lineService;
+    private final ToneService toneService;
+
     private final SongRepository songRepository;
     private final LineRepository lineRepository;
-    private final ToneRepository toneRepository;
 
-    public SongService(SongRepository songRepository, LineRepository lineRepository, ToneRepository toneRepository) {
+    public SongService(LineService lineService, ToneService toneService, SongRepository songRepository, LineRepository lineRepository) {
+        this.lineService = lineService;
+        this.toneService = toneService;
         this.songRepository = songRepository;
         this.lineRepository = lineRepository;
-        this.toneRepository = toneRepository;
     }
 
     public List<Song> getSongsByUser(Long userId) {
@@ -51,32 +49,13 @@ public class SongService {
             newSong.setComposer(songDto.getComposer());
             newSong.setAuthor(songDto.getAuthor());
             newSong.setEnteredAt(LocalDateTime.now());
-            newSong.setLines(new ArrayList<>());
 
-            // Process each line
-            for (LineDto lineDto : songDto.getLines()) {
-                Line line = new Line();
-                line.setLineType(lineDto.getLineType());
-                line.setLyrics(lineDto.getLyrics());
-                line.setTones(new ArrayList<>());
+            Song savedSong = songRepository.save(newSong);
 
-                // Process each tone
-                for (ToneDto toneDto : lineDto.getTones()) {
-                    Tone tone = toneRepository.findByChordAndPosition(toneDto.getChord(), toneDto.getPosition());
-                    if (tone == null) {
-                        tone = new Tone();
-                        tone.setChord(toneDto.getChord());
-                        tone.setPosition(toneDto.getPosition());
-                        tone = toneRepository.save(tone);
-                    }
-                    line.getTones().add(tone);
-                }
+            // assign the Lines to the Song
+            newSong.setLines(lineService.addLines(savedSong, songDto));
 
-                Line lineSaved = lineRepository.save(line);
-                newSong.getLines().add(lineSaved);
-            }
-
-            return songRepository.save(newSong);
+            return savedSong;
         }
 
     @Transactional
@@ -92,33 +71,33 @@ public class SongService {
         existingSong.setAuthor(songDto.getAuthor());
         existingSong.setEnteredAt(LocalDateTime.now());
 
-        // Clear old lines
+        // Delete all lines associated with the song
         lineRepository.deleteAll(existingSong.getLines());
-        existingSong.setLines(new ArrayList<>());
 
-        // Rebuild lines and tones
-        for (LineDto lineDto : songDto.getLines()) {
-            Line line = new Line();
-            line.setLineType(lineDto.getLineType());
-            line.setLyrics(lineDto.getLyrics());
-            line.setTones(new ArrayList<>());
+        // Enter all the new lines associated with the song
+        existingSong.setLines(lineService.addLines(existingSong, songDto));
 
-            for (ToneDto toneDto : lineDto.getTones()) {
-                Tone tone = toneRepository.findByChordAndPosition(toneDto.getChord(), toneDto.getPosition());
-                if (tone == null) {
-                    tone = new Tone();
-                    tone.setChord(toneDto.getChord());
-                    tone.setPosition(toneDto.getPosition());
-                    tone = toneRepository.save(tone);
-                }
-                line.getTones().add(tone);
-            }
+        // remove orphan tones
+        toneService.removeTones();
 
-            Line savedLine = lineRepository.save(line);
-            existingSong.getLines().add(savedLine);
-        }
+        return existingSong;
+    }
 
-        return songRepository.save(existingSong);
+    @Transactional
+    public void deleteSong(Long userId, Long songId) {
+        // Fetch the song and verify ownership
+        Song song = songRepository.findById(songId)
+                .filter(s -> s.getUserId() == userId)
+                .orElseThrow(() -> new EntityNotFoundException("Song not found or access denied"));
+
+        // Delete all lines associated with the song
+        lineRepository.deleteAll(song.getLines());
+
+        // Delete the song itself
+        songRepository.delete(song);
+
+        // remove orphan tones
+        toneService.removeTones();
     }
 
 }

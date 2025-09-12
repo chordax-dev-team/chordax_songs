@@ -1,6 +1,5 @@
 package chordax_dev_team.chordax_songs.exceptions;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

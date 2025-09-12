@@ -1,14 +1,11 @@
 package chordax_dev_team.chordax_songs.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Schema(description = "Tone model with chords contaings it note and position along lyrics.")
 @Entity
@@ -31,9 +28,8 @@ public class Tone {
 	@Column(nullable = false)
 	private int position;
 
-	@Schema(description = "Lines that use this tone.")
-	@ManyToMany(mappedBy = "tones")
-	@JsonIgnore
-	private List<Line> lines = new ArrayList<>();
-
+	public Tone(String chord, int position) {
+		this.chord = chord;
+		this.position = position;
+	}
 }
