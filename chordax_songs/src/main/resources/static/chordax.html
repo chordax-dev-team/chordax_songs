@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chordax PDF Generator</title>
+    <style>
+        body {
+          font-family: sans-serif;
+          padding: 2rem;
+          background: #f4f4f4;
+        }
+        .container {
+          background: white;
+          padding: 2rem;
+          border-radius: 8px;
+          max-width: 400px;
+          margin: auto;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        select, button {
+          width: 100%;
+          padding: 0.75rem;
+          margin-top: 1rem;
+          font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img src="./img/chordax.png" width="200"/>
+    <h2>Create Song PDF</h2>
+    <label for="songId">Select Song ID:</label>
+    <select id="songId">
+        <!-- Add more options dynamically if needed -->
+    </select>
+    <button onclick="createPDF()">Create PDF</button>
+</div>
+
+<script>
+    async function createPDF() {
+      const songId = document.getElementById("songId").value;
+
+      try {
+        const response = await fetch(`http://localhost:8081/api/v1/pdfs/${songId}`);
+        if (!response.ok) throw new Error("Failed to fetch PDF");
+
+        const pdfDto = await response.json(); // Expecting { title: "...", content: "base64string" }
+        console.log(pdfDto);
+
+        if (!pdfDto.data || !pdfDto.title) {
+          throw new Error("Invalid PDF data received");
+        }
+
+
+        // Convert base64 to binary
+        const byteCharacters = atob(pdfDto.data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: "application/pdf" });
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${pdfDto.title}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+      } catch (error) {
+        alert("Error generating PDF: " + error.message);
+      }
+    }
+
+  async function fetchTitles() {
+    const songSelection = document.getElementById("songId");
+
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/titles/1");
+      if (!response.ok) throw new Error("Problem with finding titles");
+
+      const titles = await response.json(); // Expecting an array of strings like ["As It Was", "Watermelon Sugar", ...]
+
+      if (!Array.isArray(titles) || titles.length === 0) {
+        throw new Error("List of songs is empty");
+      }
+
+      titles.forEach((title, index) => {
+        const option = document.createElement("option");
+        option.value = index; // or use a unique ID if available
+        option.textContent = title.songTitle;
+        songSelection.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Error loading song titles:", error.message);
+    }
+  }
+  window.onload = fetchTitles;
+</script>
+</body>
+</html>
