@@ -19,5 +19,5 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 	Song findByUserIdAndId(long userId, long id);
 
 	@Query(value = "SELECT new chordax_dev_team.chordax_songs.title.dto.TitleDto(s.id, s.title) FROM Song s WHERE s.userId = :id")
-	List<TitleDto> getTitlesByUserId(@Param("id") Long userId);
+	List<TitleDto> titlesByUserId(@Param("id") Long userId);
 }

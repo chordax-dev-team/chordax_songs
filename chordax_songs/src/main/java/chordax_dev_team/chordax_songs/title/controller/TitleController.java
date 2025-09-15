@@ -8,7 +8,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,10 +19,12 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/titles/{userId}")
 @CrossOrigin(origins = "*") // Consider restricting this in production
+@RequiredArgsConstructor
 public class TitleController {
 
-    @Autowired
-    private SongService songService;
+    private static final Logger logger = LoggerFactory.getLogger(TitleController.class);
+
+    private final SongService songService;
 
     @Operation(summary = "Get all titles for a user", description = "Retrieves a list of all titles created by the specified user")
     @ApiResponses(value = {
@@ -29,9 +33,15 @@ public class TitleController {
     })
     @GetMapping
     public ResponseEntity<List<TitleDto>> getTitles(@PathVariable Long userId) {
-        List<TitleDto> titles = songService.getTitles(userId);
-        return titles != null && !titles.isEmpty()
-                ? ResponseEntity.ok(titles)
-                : ResponseEntity.notFound().build();
+        logger.info("GET /api/v1/titles/{} - Fetching titles for user", userId);
+        List<TitleDto> titles = songService.titles(userId);
+
+        if (titles != null && !titles.isEmpty()) {
+            logger.debug("Found {} titles for userId={}", titles.size(), userId);
+            return ResponseEntity.ok(titles);
+        } else {
+            logger.warn("No titles found for userId={}", userId);
+            return ResponseEntity.notFound().build();
+        }
     }
 }

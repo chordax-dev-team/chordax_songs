@@ -1,8 +1,7 @@
 package chordax_dev_team.chordax_songs.song.controller;
 
-import java.util.List;
-
 import chordax_dev_team.chordax_songs.song.exceptions.ApiException;
+import chordax_dev_team.chordax_songs.song.model.Song;
 import chordax_dev_team.chordax_songs.song.model.dto.SongDto;
 import chordax_dev_team.chordax_songs.song.service.SongService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,33 +11,42 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import chordax_dev_team.chordax_songs.song.model.Song;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/songs")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "*") // Consider restricting this in production
 public class SongController {
 
-	@Autowired
-	private SongService songService;
+	private static final Logger logger = LoggerFactory.getLogger(SongController.class);
 
-	@Operation(summary = "Get all songs for a user", description = "Retrieves a list of all songs created by the specified user")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Songs retrieved successfully"),
-			@ApiResponse(responseCode = "404", description = "No songs found for user", content = @Content(schema = @Schema(implementation = ApiException.class)))
-	})
-	@GetMapping("/{userId}")
-	public ResponseEntity<List<Song>> getAllSongs(@PathVariable Long userId) {
-		List<Song> songs = songService.getSongsByUserId(userId);
-		return songs != null && !songs.isEmpty()
-				? ResponseEntity.ok(songs)
-				: ResponseEntity.notFound().build();
-	}
+	private final SongService songService;
 
+//	@Operation(summary = "Get all songs for a user", description = "Retrieves a list of all songs created by the specified user")
+//	@ApiResponses(value = {
+//			@ApiResponse(responseCode = "200", description = "Songs retrieved successfully"),
+//			@ApiResponse(responseCode = "404", description = "No songs found for user", content = @Content(schema = @Schema(implementation = ApiException.class)))
+//	})
+//	@GetMapping("/{userId}")
+//	public ResponseEntity<List<Song>> getUserAllSongs(@PathVariable Long userId) {
+//		logger.info("GET /api/v1/songs/{} - Fetching all songs for user", userId);
+//		List<Song> songs = songService.getSongByUserId(userId);
+//		if (songs != null && !songs.isEmpty()) {
+//			logger.debug("Found song for userId={}", songs.size());
+//			return ResponseEntity.ok(songs);
+//		} else {
+//			logger.warn("No songs found for userId={}", userId);
+//			return ResponseEntity.notFound().build();
+//		}
+//	}
 
 	@Operation(summary = "Get a song by user and song ID", description = "Retrieves a song with its lyrics and chords for a specific user")
 	@ApiResponses(value = {
@@ -48,12 +56,16 @@ public class SongController {
 	@GetMapping("/{userId}/{songId}")
 	public ResponseEntity<Song> getUserSong(@PathVariable Long userId,
 											@PathVariable Long songId) {
+		logger.info("GET /api/v1/songs/{}/{} - Fetching song for user", userId, songId);
 		Song song = songService.getSongByUserAndId(userId, songId);
-		return song != null
-				? ResponseEntity.ok(song)
-				: ResponseEntity.notFound().build();
+		if (song != null) {
+			logger.debug("Found song ID={} titled '{}'", song.getId(), song.getTitle());
+			return ResponseEntity.ok(song);
+		} else {
+			logger.warn("Song ID={} not found for userId={}", songId, userId);
+			return ResponseEntity.notFound().build();
+		}
 	}
-
 
 	@Operation(summary = "Add a new song for a user", description = "Creates a song with lyrics and chords")
 	@ApiResponses(value = {
@@ -63,10 +75,15 @@ public class SongController {
 	})
 	@PostMapping("/{userId}")
 	public ResponseEntity<Song> addSong(@PathVariable Long userId, @Valid @RequestBody SongDto songDto) {
+		logger.info("POST /api/v1/songs/{} - Adding new song '{}'", userId, songDto.title());
 		Song created = songService.addSong(userId, songDto);
-		return created != null
-				? ResponseEntity.status(HttpStatus.CREATED).body(created)
-				: ResponseEntity.status(HttpStatus.CONFLICT).build();
+		if (created != null) {
+			logger.debug("Created song ID={} titled '{}'", created.getId(), created.getTitle());
+			return ResponseEntity.status(HttpStatus.CREATED).body(created);
+		} else {
+			logger.warn("Song '{}' already exists for userId={}", songDto.title(), userId);
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
 	}
 
 	@Operation(summary = "Update a song")
@@ -79,10 +96,15 @@ public class SongController {
 	public ResponseEntity<Song> updateSong(@PathVariable Long userId,
 										   @PathVariable Long songId,
 										   @Valid @RequestBody SongDto songDto) {
+		logger.info("PUT /api/v1/songs/{}/{} - Updating song '{}'", userId, songId, songDto.title());
 		Song updated = songService.updateSong(userId, songId, songDto);
-		return updated != null
-				? ResponseEntity.ok(updated)
-				: ResponseEntity.notFound().build(); // 404 if song not found
+		if (updated != null) {
+			logger.debug("Updated song ID={} titled '{}'", updated.getId(), updated.getTitle());
+			return ResponseEntity.ok(updated);
+		} else {
+			logger.warn("Song ID={} not found for userId={}", songId, userId);
+			return ResponseEntity.notFound().build();
+		}
 	}
 
 	@Operation(summary = "Delete a song")
@@ -93,11 +115,14 @@ public class SongController {
 	@DeleteMapping("/{userId}/{songId}")
 	public ResponseEntity<Void> deleteSong(@PathVariable Long userId,
 										   @PathVariable Long songId) {
+		logger.info("DELETE /api/v1/songs/{}/{} - Attempting to delete song", userId, songId);
 		try {
 			songService.deleteSong(userId, songId);
-			return ResponseEntity.noContent().build(); // 204 No Content
+			logger.debug("Deleted song ID={} for userId={}", songId, userId);
+			return ResponseEntity.noContent().build();
 		} catch (EntityNotFoundException e) {
-			return ResponseEntity.notFound().build(); // 404 Not Found
+			logger.warn("Failed to delete: song ID={} not found for userId={}", songId, userId);
+			return ResponseEntity.notFound().build();
 		}
 	}
 }
