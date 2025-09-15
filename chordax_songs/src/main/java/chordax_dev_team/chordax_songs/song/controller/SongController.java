@@ -30,24 +30,6 @@ public class SongController {
 
 	private final SongService songService;
 
-//	@Operation(summary = "Get all songs for a user", description = "Retrieves a list of all songs created by the specified user")
-//	@ApiResponses(value = {
-//			@ApiResponse(responseCode = "200", description = "Songs retrieved successfully"),
-//			@ApiResponse(responseCode = "404", description = "No songs found for user", content = @Content(schema = @Schema(implementation = ApiException.class)))
-//	})
-//	@GetMapping("/{userId}")
-//	public ResponseEntity<List<Song>> getUserAllSongs(@PathVariable Long userId) {
-//		logger.info("GET /api/v1/songs/{} - Fetching all songs for user", userId);
-//		List<Song> songs = songService.getSongByUserId(userId);
-//		if (songs != null && !songs.isEmpty()) {
-//			logger.debug("Found song for userId={}", songs.size());
-//			return ResponseEntity.ok(songs);
-//		} else {
-//			logger.warn("No songs found for userId={}", userId);
-//			return ResponseEntity.notFound().build();
-//		}
-//	}
-
 	@Operation(summary = "Get a song by user and song ID", description = "Retrieves a song with its lyrics and chords for a specific user")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Song retrieved successfully"),
