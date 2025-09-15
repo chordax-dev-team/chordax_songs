@@ -69,41 +69,6 @@ public class SongService {
         return addSong(userId, songDto);
     }
 
-//    @Transactional
-//    public Song updateSong(Long userId, Long songId, SongDto songDto) {
-//        // Fetch existing song
-//        Song existingSong = songRepository.findById(songId)
-//                .filter(song -> song.getUserId() == userId)
-//                .orElseThrow(() -> new EntityNotFoundException("Song not found or access denied"));
-//
-//        // Update metadata
-//        existingSong.setTitle(songDto.title());
-//        existingSong.setComposer(songDto.getComposer());
-//        existingSong.setAuthor(songDto.getAuthor());
-//        existingSong.setEnteredAt(LocalDateTime.now());
-//        logger.info("Song of ID={} is set to USER={}", existingSong.getId(), existingSong.getUserId());
-//
-//
-//        // Delete all lines associated with the song
-////        lineRepository.deleteAll(existingSong.getLines());
-//        logger.info("Number of Lines of song ID={} is {}", songId, existingSong.getLines().size());
-//        // Enter all the new lines associated with the song
-//        List<Line> savedLines = lineService.addLines(existingSong, songDto);
-//        logger.info("Number of saved Lines of song ID={} is {}", songId, savedLines.size());
-//        existingSong.setLines(savedLines);
-//        logger.info("Number of lines of song ID={} is {}", songId, existingSong.getLines().size());
-//        // Enter all the new lines associated with the song
-//
-//        songRepository.save(existingSong);
-//
-//        logger.info("Existing song ID={}", existingSong.getId());
-//
-//        // remove orphan tones
-////        toneService.removeOrphanTones();
-//
-//        return existingSong;
-//    }
-
     @Transactional
     public void deleteSong(Long userId, Long songId) {
         // Fetch the song and verify ownership
