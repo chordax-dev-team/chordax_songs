@@ -5,7 +5,6 @@ import chordax_dev_team.chordax_songs.song.model.Song;
 import chordax_dev_team.chordax_songs.song.model.dto.SongDto;
 import chordax_dev_team.chordax_songs.song.repository.LineRepository;
 import chordax_dev_team.chordax_songs.song.repository.SongRepository;
-import chordax_dev_team.chordax_songs.title.dto.TitleDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -13,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,10 +26,6 @@ public class SongService {
     private final ToneService toneService;
     private final SongRepository songRepository;
     private final LineRepository lineRepository;
-
-//    public List<Song> getSongsByUserId(Long userId) {
-//        return songRepository.findByUserId(userId);
-//    }
 
     public Song getSongByUserAndId(Long userId, Long songId) {
         return songRepository.findByUserIdAndId(userId, songId);
@@ -84,10 +78,5 @@ public class SongService {
 
         // remove orphan tones
         toneService.removeOrphanTones();
-    }
-
-    @Transactional
-    public List<TitleDto> titles(Long userId) {
-        return songRepository.titlesByUserId(userId);
     }
 }
