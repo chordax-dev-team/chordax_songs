@@ -1,6 +1,10 @@
 spring:
   application.name: chordax_songs
 
+########################### CONFIG ############################################
+  config.import: optional:configserver:http://localhost:8888
+  cloud.config.uri: http://localhost:8888
+
 ########################### H2 ############################################
 #----------- to set h2 database connection -----------------
   datasource:
@@ -11,8 +15,8 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
-#----------- to insert data at start from resources/data.sql file -----------------
-    defer-datasource-initialization: true
+##----------- to insert data at start from resources/data.sql file -----------------
+#    defer-datasource-initialization: true
 #----------- to open h2 console in browser -----------------
   h2.console.enabled: true
 
@@ -34,5 +38,5 @@ springdoc.api-docs:
 
 ########################### EUREKA ############################################
 eureka:
-  client.serviceUrl.defaultZone: http://localhost:8765/eureka
-  instance.preferIpAddress: true
+  client.serviceUrl.defaultZone:
+  instance.preferIpAddress:
