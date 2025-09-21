@@ -1,9 +1,15 @@
 spring:
-  application.name: chordax_songs
 
 ########################### CONFIG ############################################
   config.import: optional:configserver:http://localhost:8888
   cloud.config.uri: http://localhost:8888
+
+  ### WHAT CONFIGURED:
+  ###### - EUREKA - SERVICE DISCOVERY - CLIENT
+  ###### - PORT
+
+########################### APP'S NAME ############################################
+  application.name: chordax_songs
 
 ########################### H2 ############################################
 #----------- to set h2 database connection -----------------
@@ -15,8 +21,6 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
-##----------- to insert data at start from resources/data.sql file -----------------
-#    defer-datasource-initialization: true
 #----------- to open h2 console in browser -----------------
   h2.console.enabled: true
 
@@ -35,8 +39,3 @@ springdoc.api-docs:
   title: Chordax Songs API
   version: 1.0.0
   description: REST API for managing songs, lyrics, and chords
-
-########################### EUREKA ############################################
-eureka:
-  client.serviceUrl.defaultZone:
-  instance.preferIpAddress:
